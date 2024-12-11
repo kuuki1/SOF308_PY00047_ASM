@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile-frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ../backend
+      dockerfile: ../docker/Dockerfile-backend
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/news_application
+      - SPRING_DATASOURCE_USERNAME=phamtin
+      - SPRING_DATASOURCE_PASSWORD=123
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: news_application  # Đảm bảo tạo cơ sở dữ liệu nếu cần
+    ports:
+      - "3306:3306"
+    volumes:
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
